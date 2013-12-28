@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Circuitbox : A dependency-injection framework for node.js" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Circuitbox</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/oddjobsman/circuitbox">View on GitHub</a>
+
+          <h1 id="project_title">Circuitbox</h1>
+          <h2 id="project_tagline">A dependency-injection framework for node.js</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/oddjobsman/circuitbox/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/oddjobsman/circuitbox/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a name="circuitbox" class="anchor" href="#circuitbox"><span class="octicon octicon-link"></span></a>circuitbox</h1>
+
+<p>A dependency-injection framework for node.js</p>
+
+<p><a href="https://waffle.io/oddjobsman/circuitbox"><img src="https://badge.waffle.io/oddjobsman/circuitbox.png?label=ready" alt="Stories in Ready"></a>
+<a href="http://travis-ci.org/oddjobsman/circuitbox"><img src="https://secure.travis-ci.org/oddjobsman/circuitbox.png" alt="build status"></a>
+<a href="https://david-dm.org/oddjobsman/circuitbox"><img src="https://david-dm.org/oddjobsman/circuitbox.png" alt="dependency status"></a>
+<a href="https://bitdeli.com/free" title="Bitdeli Badge"><img src="https://d2weczhvl823v0.cloudfront.net/oddjobsman/circuitbox/trend.png" alt="Bitdeli Badge"></a>
+<a href="https://sourcegraph.com/github.com/oddjobsman/circuitbox"><img src="https://sourcegraph.com/api/repos/github.com/oddjobsman/circuitbox/badges/status.png" alt="status"></a></p>
+
+<h2>
+<a name="objectives" class="anchor" href="#objectives"><span class="octicon octicon-link"></span></a>Objectives</h2>
+
+<ol>
+<li>Make wiring up of dependent components simple and easy and manageable</li>
+<li>Write testable units of code without worrying about their wiring up</li>
+<li>Provide a robust platform to write large-scale node.js applications.</li>
+</ol><h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>This module can be installed via npm:</p>
+
+<div class="highlight highlight-bash"><pre><span class="nv">$ </span>npm install --save circuitbox
+</pre></div>
+
+<h2>
+<a name="example-usage" class="anchor" href="#example-usage"><span class="octicon octicon-link"></span></a>Example Usage</h2>
+
+<div class="highlight highlight-js"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">circuitbox</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'circuitbox'</span><span class="p">);</span>
+<span class="kd">var</span> <span class="nx">cb</span> <span class="o">=</span> <span class="nx">circuitbox</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+    <span class="nx">modules</span><span class="o">:</span> <span class="p">[</span><span class="s1">'config/commonModule'</span><span class="p">,</span> <span class="s1">'config/webModule'</span><span class="p">]</span>
+<span class="p">});</span>
+</pre></div>
+
+<div class="highlight highlight-js"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">CreditCardProcessor</span> <span class="p">(</span><span class="nx">processor</span><span class="p">,</span> <span class="nx">transactionLog</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">chargeOrder</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">order</span><span class="p">,</span> <span class="nx">creditCard</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">tx</span> <span class="o">=</span> <span class="nx">processor</span><span class="p">.</span><span class="nx">processTransaction</span><span class="p">(</span><span class="nx">creditCard</span><span class="p">,</span> <span class="nx">order</span><span class="p">.</span><span class="nx">amount</span><span class="p">);</span>
+        <span class="nx">transactionLog</span><span class="p">.</span><span class="nx">recordPayment</span><span class="p">(</span><span class="nx">tx</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</pre></div>
+
+<h3>
+<a name="components" class="anchor" href="#components"><span class="octicon octicon-link"></span></a>Components</h3>
+
+<p>Components are objects which provide a service. They usually collaborate with other components that provide other required services. circuitbox prescribes a specific convention with which you can author your components. This conventions helps the component recieve the required dependencies. Below is an example of a component:</p>
+
+<div class="highlight highlight-js"><pre><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="kd">function</span> <span class="nx">CreditCardProcessor</span> <span class="p">(</span><span class="nx">processor</span><span class="p">,</span> <span class="nx">transactionLog</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">chargeOrder</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">order</span><span class="p">,</span> <span class="nx">creditCard</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">tx</span> <span class="o">=</span> <span class="nx">processor</span><span class="p">.</span><span class="nx">processTransaction</span><span class="p">(</span><span class="nx">creditCard</span><span class="p">,</span> <span class="nx">order</span><span class="p">.</span><span class="nx">amount</span><span class="p">);</span>
+        <span class="nx">transactionLog</span><span class="p">.</span><span class="nx">recordPayment</span><span class="p">(</span><span class="nx">tx</span><span class="p">);</span>
+    <span class="p">};</span>
+<span class="p">};</span>
+</pre></div>
+
+<h3>
+<a name="basic-example" class="anchor" href="#basic-example"><span class="octicon octicon-link"></span></a>Basic Example</h3>
+
+<p>Assuming there is a file named <code>consoleMessagePrinter.js</code> in the same folder with the code:</p>
+
+<div class="highlight highlight-js"><pre><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="s1">'use strict'</span><span class="p">;</span>
+
+  <span class="c1">// Our console message printer</span>
+  <span class="c1">// deps is injected by circuitbox with the dependencies</span>
+  <span class="kd">function</span> <span class="nx">ConsoleMessagePrinter</span><span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="nx">print</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">deps</span><span class="p">.</span><span class="nx">messageSource</span><span class="p">.</span><span class="nx">message</span><span class="p">());</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+  <span class="p">}</span>
+
+  <span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">ConsoleMessagePrinter</span><span class="p">;</span>
+<span class="p">})();</span>
+</pre></div>
+
+<p>And in our <code>main.js</code> file we have code as:</p>
+
+<div class="highlight highlight-js"><pre><span class="p">(</span><span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="s1">'use strict'</span><span class="p">;</span>
+
+  <span class="c1">// our simple message source</span>
+  <span class="c1">// deps is injected by circuitbox with the dependencies</span>
+  <span class="kd">var</span> <span class="nx">simpleMessageSource</span> <span class="o">=</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">deps</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="p">{</span>
+      <span class="nx">message</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">deps</span><span class="p">.</span><span class="nx">message</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">};</span>
+  <span class="p">};</span>
+
+  <span class="c1">// require circuitbox</span>
+  <span class="kd">var</span> <span class="nx">circuitbox</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">'circuitbox'</span><span class="p">);</span>
+
+  <span class="c1">// create a circuitbox</span>
+  <span class="nx">circuitbox</span><span class="p">.</span><span class="nx">create</span><span class="p">({</span>
+    <span class="nx">modules</span><span class="o">:</span> <span class="p">[</span>
+      <span class="kd">function</span> <span class="p">(</span><span class="nx">registry</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// the message to be used</span>
+        <span class="nx">registry</span><span class="p">.</span><span class="k">for</span><span class="p">(</span><span class="s1">'message'</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="s1">'This is the message'</span><span class="p">);</span>
+
+        <span class="c1">// define the message source</span>
+        <span class="nx">registry</span><span class="p">.</span><span class="k">for</span><span class="p">(</span><span class="s1">'messageSource'</span><span class="p">).</span><span class="nx">use</span><span class="p">(</span><span class="nx">simpleMessageSource</span><span class="p">)</span>
+          <span class="p">.</span><span class="nx">dependsOn</span><span class="p">(</span><span class="s1">'message'</span><span class="p">).</span><span class="nx">scope</span><span class="p">(</span><span class="s1">'singleton'</span><span class="p">);</span>
+
+        <span class="c1">// define the message printer - does a module.require internally</span>
+        <span class="nx">registry</span><span class="p">.</span><span class="k">for</span><span class="p">(</span><span class="s1">'messagePrinter'</span><span class="p">).</span><span class="nx">requires</span><span class="p">(</span><span class="s1">'./consoleMessagePrinter'</span><span class="p">)</span>
+          <span class="p">.</span><span class="nx">dependsOn</span><span class="p">(</span><span class="s1">'messageSource'</span><span class="p">).</span><span class="nx">scope</span><span class="p">(</span><span class="s1">'singleton'</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">]</span>
+  <span class="p">}).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">cbx</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// get the message printer and print a message</span>
+    <span class="nx">cbx</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="s1">'messagePrinter'</span><span class="p">).</span><span class="nx">then</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">printer</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">printer</span><span class="p">.</span><span class="nx">print</span><span class="p">();</span>
+    <span class="p">}).</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Could not recieve a printer'</span><span class="p">);</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">});</span>
+  <span class="p">}).</span><span class="nx">fail</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">err</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">'Could not create circuitbox'</span><span class="p">);</span>
+  <span class="p">});</span>
+
+<span class="p">})();</span>
+</pre></div>
+
+<h2>
+<a name="contributing" class="anchor" href="#contributing"><span class="octicon octicon-link"></span></a>Contributing</h2>
+
+<ol>
+<li>Fork it</li>
+<li>Create your feature branch (<code>git checkout -b my-new-feature</code>)</li>
+<li>Follow the <a href="Coding-Conventions">coding conventions</a>
+</li>
+<li>Commit your changes (<code>git commit -am 'Add some feature'</code>)</li>
+<li>Push to the branch (<code>git push origin my-new-feature</code>)</li>
+<li>Create new Pull Request</li>
+</ol>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Circuitbox maintained by <a href="https://github.com/oddjobsman">oddjobsman</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-46745536-1");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
