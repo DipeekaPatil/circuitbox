@@ -1,0 +1,5 @@
+support
+test
+Makefile
+*.sublime-*
+.idea/
